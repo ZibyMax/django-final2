@@ -125,9 +125,12 @@ class PriceView(APIView):
     def get(self, request, store_id=None):
         if store_id is None:
             queryset = Store.objects.all()
-        elif Store.objects.filter(pk=store_id).exists():
+            serializer = PriceSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        if Store.objects.filter(pk=store_id).exists():
             queryset = Store.objects.get(pk=store_id)
+            serializer = PriceSerializer(queryset)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Store not found.'}, status=status.HTTP_400_BAD_REQUEST)
-        serializer = PriceSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
