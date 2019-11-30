@@ -118,8 +118,9 @@ class IsShopOwner(BasePermission):
         return bool(request.user and request.user.is_authenticated and user_has_store)
 
 
+# Экспорт прайс-листа
 class PriceView(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
 
     def get(self, request, store_id=None):
         if store_id is None:

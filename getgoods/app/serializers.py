@@ -43,13 +43,31 @@ class ParameterSerializer(serializers.ModelSerializer):
 class ProductParameterSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductParameter
-        fields = ('id', 'product', 'parameter', 'value')
+        fields = ('parameter', 'value')
+
+    parameter = serializers.StringRelatedField()
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'name', 'category')
+        fields = ('id', 'name', 'category', 'parameters')
+
+    category = CategorySerializer()
+    parameters = serializers.SerializerMethodField()
+
+    def get_parameters(self, obj):
+        parameters = ProductParameter.objects.filter(product=obj)
+        serializer = ProductParameterSerializer(parameters, many=True)
+        return serializer.data
+
+
+class PriceItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PriceItem
+        fields = ('product', 'quantity', 'cost')
+
+    product = ProductSerializer()
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -60,4 +78,6 @@ class PriceSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField()
 
     def get_price(self, obj):
-        return 'Йооохууу!'
+        price = Price.objects.filter(store=obj).order_by('data').last()
+        serializer = PriceItemSerializer(price.price_items.all(), many=True)
+        return serializer.data
