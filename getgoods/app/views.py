@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .serializers import CategorySerializer, ParameterSerializer, ProductSerializer, ProductParameterSerializer, \
-    UserSerializer, StoreSerializer, PriceSerializer
+    UserSerializer, StoreSerializer, PriceSerializer, PriceItemSerializer, ImportPriceItemSerializer
 from .models import Category, Parameter, Product, ProductParameter, Store, Price
 
 
@@ -102,7 +102,7 @@ class RegisterStoreView(APIView):
             return Response({'error': 'Field "name" is required.'}, status=status.HTTP_400_BAD_REQUEST)
         is_user_has_store = Store.objects.filter(user=request.user).exists()
         if is_user_has_store:
-            return Response({'error': 'user already has store'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'User already has store'}, status=status.HTTP_400_BAD_REQUEST)
         data['user'] = request.user.id
         serializer = StoreSerializer(data=data)
         if not serializer.is_valid():
@@ -111,14 +111,7 @@ class RegisterStoreView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# Доступ только для пользователей зарегистрировавших магазин
-class IsShopOwner(BasePermission):
-    def has_permission(self, request):
-        user_has_store = Store.objects.filter(user=request.user).exists()
-        return bool(request.user and request.user.is_authenticated and user_has_store)
-
-
-# Экспорт прайс-листа
+# Экспорт и импорт прайс-листа
 class PriceView(APIView):
     permission_classes = (IsAuthenticated, )
 
@@ -133,4 +126,26 @@ class PriceView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Store not found.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, store_id=None):
+        user = request.user
+        user_stores = Store.objects.filter(user=user)
+        if not user_stores.exists():
+            return Response({'error': 'User not has store.'}, status=status.HTTP_400_BAD_REQUEST)
+        user_store = user_stores.first()
+        if 'store' not in request.data:
+            return Response({'error': 'Field "store" is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        if request.data['store'] != user_store.id:
+            return Response({'error': 'User not owner this store.'}, status=status.HTTP_400_BAD_REQUEST)
+        if 'price' not in request.data:
+            return Response({'error': 'Field "price" is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        price = Price(store=user_store)
+        price.save()
+        for item in request.data['price']:
+            serializer = ImportPriceItemSerializer(data=item)
+            if serializer.is_valid():
+                price_item = serializer.save()
+                price.price_items.add(price_item)
+        price.save()
+        return Response(status=status.HTTP_200_OK)
 

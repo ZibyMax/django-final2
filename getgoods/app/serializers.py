@@ -70,6 +70,12 @@ class PriceItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
 
 
+class ImportPriceItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PriceItem
+        fields = ('product', 'quantity', 'cost')
+
+
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
