@@ -1,6 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+ORDER_STATUS = (
+    ('new', 'новый'),
+    ('processing', 'обработка'),
+    ('executed', 'выполнен'),
+)
 
 class Store(models.Model):
     name = models.CharField(max_length=255)
@@ -34,7 +39,7 @@ class PriceItem(models.Model):
 class Price(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
     data = models.DateTimeField(auto_now_add=True, auto_now=False)
-    price_items = models.ManyToManyField('PriceItem')
+    price_items = models.ManyToManyField(PriceItem)
 
     def __str__(self):
         return f'{self.store.name} price'
@@ -54,4 +59,20 @@ class ProductParameter(models.Model):
 
     def __str__(self):
         return f'{self.product.name} ({self.parameter.name}={self.value})'
+
+
+class OrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField()
+    cost = models.FloatField()
+
+
+class Order(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.PROTECT)
+    data = models.DateTimeField(auto_now_add=True, auto_now=False)
+    order_items = models.ManyToManyField(OrderItem)
+    status = models.CharField(max_length=255, choices=ORDER_STATUS, default='new')
+
+    def __str__(self):
+        return f'{self.store.name} order'
 

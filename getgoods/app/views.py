@@ -6,8 +6,15 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .serializers import CategorySerializer, ParameterSerializer, ProductSerializer, ProductParameterSerializer, \
-    UserSerializer, StoreSerializer, PriceSerializer, PriceItemSerializer, ImportPriceItemSerializer
+    UserSerializer, StoreSerializer, PriceSerializer, ImportPriceItemSerializer, StorePriceSerializer
 from .models import Category, Parameter, Product, ProductParameter, Store, Price
+
+
+# Доступ только для пользователей зарегистрировавших магазин
+class IsShopOwner(BasePermission):
+    def has_permission(self, request, view):
+        user_has_store = Store.objects.filter(user=request.user).exists()
+        return bool(request.user and request.user.is_authenticated and user_has_store)
 
 
 # Обработка категорий товаров
@@ -111,35 +118,38 @@ class RegisterStoreView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# Экспорт и импорт прайс-листа
+# Экспорт прайс-листа
 class PriceView(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request, store_id=None):
         if store_id is None:
             queryset = Store.objects.all()
-            serializer = PriceSerializer(queryset, many=True)
+            serializer = StorePriceSerializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         if Store.objects.filter(pk=store_id).exists():
             queryset = Store.objects.get(pk=store_id)
-            serializer = PriceSerializer(queryset)
+            serializer = StorePriceSerializer(queryset)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Store not found.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, store_id=None):
-        user = request.user
-        user_stores = Store.objects.filter(user=user)
-        if not user_stores.exists():
-            return Response({'error': 'User not has store.'}, status=status.HTTP_400_BAD_REQUEST)
-        user_store = user_stores.first()
-        if 'store' not in request.data:
-            return Response({'error': 'Field "store" is required.'}, status=status.HTTP_400_BAD_REQUEST)
-        if request.data['store'] != user_store.id:
-            return Response({'error': 'User not owner this store.'}, status=status.HTTP_400_BAD_REQUEST)
+
+# Экспорт и импорт прайс-листа магазина пользователя
+class StorePriceView(APIView):
+    permission_classes = (IsShopOwner, )
+
+    def get(self, request):
+        store = Store.objects.get(user=request.user)
+        price = Price.objects.filter(store=store).order_by('data').last()
+        serializer = PriceSerializer(price)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        store = Store.objects.get(user=request.user)
         if 'price' not in request.data:
             return Response({'error': 'Field "price" is required.'}, status=status.HTTP_400_BAD_REQUEST)
-        price = Price(store=user_store)
+        price = Price(store=store)
         price.save()
         for item in request.data['price']:
             serializer = ImportPriceItemSerializer(data=item)
@@ -148,4 +158,23 @@ class PriceView(APIView):
                 price.price_items.add(price_item)
         price.save()
         return Response(status=status.HTTP_200_OK)
+
+
+# Размещение заказов пользователя. Получение списка с историей заказов
+class OrderView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        return Response()
+
+    def post(self, request):
+        return Response()
+
+
+# Получение магазином списка своих заказов
+class StoreOrderView(APIView):
+    permission_classes = (IsShopOwner, )
+
+    def get(self, request):
+        return Response()
 

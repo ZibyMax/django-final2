@@ -18,7 +18,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from app.views import APICategoryViewSet, APIParameterViewSet, APIProductViewSet, APIProductParameterViewSet, \
-    RegisterUserView, RecoverUserView, ResetUserView, RegisterStoreView, PriceView
+    RegisterUserView, RecoverUserView, ResetUserView, RegisterStoreView, PriceView, StorePriceView, OrderView, \
+    StoreOrderView
 
 router = DefaultRouter()
 router.register('category', APICategoryViewSet)
@@ -35,4 +36,7 @@ urlpatterns = [
     path('admin-getgoods/store/', RegisterStoreView.as_view()),
     path('price/', PriceView.as_view()),
     path('price/<int:store_id>', PriceView.as_view()),
+    path('store-price/', StorePriceView.as_view()),
+    path('order/', OrderView.as_view()),
+    path('store-order/', StoreOrderView.as_view()),
 ]

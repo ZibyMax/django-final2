@@ -76,7 +76,7 @@ class ImportPriceItemSerializer(serializers.ModelSerializer):
         fields = ('product', 'quantity', 'cost')
 
 
-class PriceSerializer(serializers.ModelSerializer):
+class StorePriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ('id', 'name', 'price')
@@ -86,4 +86,16 @@ class PriceSerializer(serializers.ModelSerializer):
     def get_price(self, obj):
         price = Price.objects.filter(store=obj).order_by('data').last()
         serializer = PriceItemSerializer(price.price_items.all(), many=True)
+        return serializer.data
+
+
+class PriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Price
+        fields = ('store', 'data', 'price_items')
+
+    price_items = serializers.SerializerMethodField()
+
+    def get_price_items(self, obj):
+        serializer = PriceItemSerializer(obj.price_items.all(), many=True)
         return serializer.data
