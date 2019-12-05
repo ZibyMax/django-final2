@@ -96,7 +96,9 @@ class StorePriceSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField()
 
     def get_price(self, obj):
-        price = Price.objects.filter(store=obj).order_by('data').last()
+        price = Price.objects.filter(store=obj).order_by('date').last()
+        if price is None:
+            return None
         serializer = PriceItemSerializer(price.price_items.all(), many=True)
         return serializer.data
 
