@@ -7,6 +7,7 @@ ORDER_STATUS = (
     ('executed', 'выполнен'),
 )
 
+
 class Store(models.Model):
     name = models.CharField(max_length=255)
     user = models.OneToOneField(User, on_delete=models.PROTECT)

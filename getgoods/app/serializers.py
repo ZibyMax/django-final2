@@ -40,7 +40,7 @@ class ParameterSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class ProductParameterSerializer(serializers.ModelSerializer):
+class ProductParameterPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductParameter
         fields = ('parameter', 'value')
@@ -48,7 +48,13 @@ class ProductParameterSerializer(serializers.ModelSerializer):
     parameter = serializers.StringRelatedField()
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductParameterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductParameter
+        fields = ('product', 'parameter', 'value')
+
+
+class ProductPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'name', 'category', 'parameters')
@@ -58,8 +64,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_parameters(self, obj):
         parameters = ProductParameter.objects.filter(product=obj)
-        serializer = ProductParameterSerializer(parameters, many=True)
+        serializer = ProductParameterPriceSerializer(parameters, many=True)
         return serializer.data
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('id', 'name', 'category')
 
 
 class PriceItemSerializer(serializers.ModelSerializer):
@@ -67,7 +79,7 @@ class PriceItemSerializer(serializers.ModelSerializer):
         model = PriceItem
         fields = ('product', 'quantity', 'cost')
 
-    product = ProductSerializer()
+    product = ProductPriceSerializer()
 
 
 class ImportPriceItemSerializer(serializers.ModelSerializer):

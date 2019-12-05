@@ -1,0 +1,26 @@
+[
+  {
+    "category": 1,
+    "name": "Телефон Apple"
+  },
+  {
+    "category": 1,
+    "name": "Телефон Samsung"
+  },
+  {
+    "category": 2,
+    "name": "Телевизор LG"
+  },
+  {
+    "category": 2,
+    "name": "Телевизор Samsung"
+  },
+  {
+    "category": 3,
+    "name": "Ноутбук Asus"
+  },
+  {
+    "category": 3,
+    "name": "Ноутбук Toshiba"
+  }
+]

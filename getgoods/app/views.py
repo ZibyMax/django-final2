@@ -21,28 +21,28 @@ class IsShopOwner(BasePermission):
 
 # Обработка категорий товаров
 class APICategoryViewSet(ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsShopOwner,)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
 # Обработка параметров
 class APIParameterViewSet(ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsShopOwner,)
     queryset = Parameter.objects.all()
     serializer_class = ParameterSerializer
 
 
 # Обработка товаров
 class APIProductViewSet(ModelViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsShopOwner,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
 # Обработка параметров товаров
 class APIProductParameterViewSet(ModelViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsShopOwner,)
     queryset = ProductParameter.objects.all()
     serializer_class = ProductParameterSerializer
 
@@ -54,8 +54,8 @@ class RegisterUserView(APIView):
 
     def post(self, request):
         data = request.data
-        if 'username' in data:
-            data['email'] = data['username']
+        if 'email' in data:
+            data['username'] = data['email']
         serializer = UserSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
