@@ -5,9 +5,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from .serializers import CategorySerializer, ParameterSerializer, ProductSerializer, ProductParameterSerializer, \
-    UserSerializer, StoreSerializer, PriceSerializer, ImportPriceItemSerializer, StorePriceSerializer
-from .models import Category, Parameter, Product, ProductParameter, Store, Price
+# from .serializers import CategorySerializer, ParameterSerializer, ProductSerializer, ProductParameterSerializer, \
+#     UserSerializer, StoreSerializer, PriceSerializer, ImportPriceItemSerializer, StorePriceSerializer, \
+#     ImportOrderItemSerializer
+from .serializers import *
+from .models import Category, Parameter, Product, ProductParameter, Store, Price, Order
 
 
 # Доступ только для пользователей зарегистрировавших магазин
@@ -150,12 +152,19 @@ class StorePriceView(APIView):
         if 'price' not in request.data:
             return Response({'error': 'Field "price" is required.'}, status=status.HTTP_400_BAD_REQUEST)
         price = Price(store=store)
+        if not isinstance(request.data['price'], list):
+            return Response('error: price should be a list', status=status.HTTP_400_BAD_REQUEST)
         price.save()
         for item in request.data['price']:
             serializer = ImportPriceItemSerializer(data=item)
             if serializer.is_valid():
                 price_item = serializer.save()
                 price.price_items.add(price_item)
+            else:
+                for saved_price_item in price.price_items.all():
+                    saved_price_item.delete()
+                price.delete()
+                Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         price.save()
         return Response(status=status.HTTP_200_OK)
 
@@ -168,7 +177,30 @@ class OrderView(APIView):
         return Response()
 
     def post(self, request):
-        return Response()
+        if 'store' not in request.data:
+            return Response({'error': 'Field "Store" is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        if 'order' not in request.data:
+            return Response({'error': 'Field "Order" is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        stores = Store.objects.filter(pk=request.data['store'])
+        if not stores.exists():
+            return Response({'error': 'Store not found.'}, status=status.HTTP_400_BAD_REQUEST)
+        store = stores.first()
+        order = Order(store=store)
+        if not isinstance(request.data['order'], list):
+            return Response('error: order should be a list', status=status.HTTP_400_BAD_REQUEST)
+        order.save()
+        for item in request.data['order']:
+            serializer = ImportOrderItemSerializer(data=item)
+            if serializer.is_valid():
+                order_item = serializer.save()
+                order.order_items.add(order_item)
+            else:
+                for saved_order_item in order.order_items.all():
+                    saved_order_item.delete()
+                order.delete()
+                Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        order.save()
+        return Response(status=status.HTTP_200_OK)
 
 
 # Получение магазином списка своих заказов

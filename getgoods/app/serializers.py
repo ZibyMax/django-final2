@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Store, Category, Product, PriceItem, Price, Parameter, ProductParameter
+from .models import Store, Category, Product, PriceItem, Price, Parameter, ProductParameter, OrderItem
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -99,3 +99,9 @@ class PriceSerializer(serializers.ModelSerializer):
     def get_price_items(self, obj):
         serializer = PriceItemSerializer(obj.price_items.all(), many=True)
         return serializer.data
+
+
+class ImportOrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ('product', 'quantity', 'cost')

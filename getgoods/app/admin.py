@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Product, PriceItem, Store, Parameter, ProductParameter, Price
+from .models import Category, Product, PriceItem, Store, Parameter, ProductParameter, Price, Order, OrderItem
 
 
 class StoreAdmin(admin.ModelAdmin):
@@ -31,6 +31,14 @@ class ProductParameterAdmin(admin.ModelAdmin):
     pass
 
 
+class OrderAdmin(admin.ModelAdmin):
+    pass
+
+
+class OrderItemAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Store, StoreAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
@@ -38,3 +46,5 @@ admin.site.register(PriceItem, PriceItemAdmin)
 admin.site.register(Price, PriceAdmin)
 admin.site.register(Parameter, ParameterAdmin)
 admin.site.register(ProductParameter, ProductParameterAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem, OrderItemAdmin)

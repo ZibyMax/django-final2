@@ -38,7 +38,7 @@ class PriceItem(models.Model):
 
 class Price(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
-    data = models.DateTimeField(auto_now_add=True, auto_now=False)
+    date = models.DateTimeField(auto_now_add=True, auto_now=False)
     price_items = models.ManyToManyField(PriceItem)
 
     def __str__(self):
@@ -69,7 +69,7 @@ class OrderItem(models.Model):
 
 class Order(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
-    data = models.DateTimeField(auto_now_add=True, auto_now=False)
+    date = models.DateTimeField(auto_now_add=True, auto_now=False)
     order_items = models.ManyToManyField(OrderItem)
     status = models.CharField(max_length=255, choices=ORDER_STATUS, default='new')
 
