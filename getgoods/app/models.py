@@ -68,6 +68,7 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
+    user = models.OneToOneField(User, on_delete=models.PROTECT, blank=True, null=True)
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
     date = models.DateTimeField(auto_now_add=True, auto_now=False)
     order_items = models.ManyToManyField(OrderItem)

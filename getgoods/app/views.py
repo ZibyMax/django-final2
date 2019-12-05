@@ -174,6 +174,7 @@ class OrderView(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
+        queryset = Order.objects.all()
         return Response()
 
     def post(self, request):
@@ -185,7 +186,7 @@ class OrderView(APIView):
         if not stores.exists():
             return Response({'error': 'Store not found.'}, status=status.HTTP_400_BAD_REQUEST)
         store = stores.first()
-        order = Order(store=store)
+        order = Order(store=store, user=request.user)
         if not isinstance(request.data['order'], list):
             return Response('error: order should be a list', status=status.HTTP_400_BAD_REQUEST)
         order.save()
