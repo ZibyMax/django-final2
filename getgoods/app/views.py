@@ -171,7 +171,7 @@ class OrderView(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        queryset = Order.objects.all()
+        queryset = Order.objects.filter(user=request.user).order_by('-date')
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -199,6 +199,13 @@ class OrderView(APIView):
                 order.delete()
                 Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         order.save()
+        price = Price.objects.filter(store=store).order_by('date').last()
+        price_items = price.price_items.all()
+        for order_item in order.order_items.all():
+            print(f'{order_item.product}\n'
+                  f'{order_item.quantity}\n'
+                  f'{order_item.cost}\n\n')
+
         return Response(status=status.HTTP_200_OK)
 
 
@@ -207,5 +214,7 @@ class StoreOrderView(APIView):
     permission_classes = (IsShopOwner, )
 
     def get(self, request):
-        return Response()
-
+        store = Store.objects.filter(user=request.user).first()
+        queryset = Order.objects.filter(store=store).order_by('date')
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data)

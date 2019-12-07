@@ -70,12 +70,12 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
     date = models.DateTimeField(auto_now_add=True, auto_now=False)
     order_items = models.ManyToManyField(OrderItem)
     status = models.CharField(max_length=255, choices=ORDER_STATUS, default='new')
 
     def __str__(self):
-        return f'{self.store.name} order'
+        return f'{self.store.name} - {self.user.username} order'
 
