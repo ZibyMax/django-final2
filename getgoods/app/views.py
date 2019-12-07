@@ -5,9 +5,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-# from .serializers import CategorySerializer, ParameterSerializer, ProductSerializer, ProductParameterSerializer, \
-#     UserSerializer, StoreSerializer, PriceSerializer, ImportPriceItemSerializer, StorePriceSerializer, \
-#     ImportOrderItemSerializer
 from .serializers import *
 from .models import Category, Parameter, Product, ProductParameter, Store, Price, Order
 
@@ -175,7 +172,8 @@ class OrderView(APIView):
 
     def get(self, request):
         queryset = Order.objects.all()
-        return Response()
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         if 'store' not in request.data:

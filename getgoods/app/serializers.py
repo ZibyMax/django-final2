@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Store, Category, Product, PriceItem, Price, Parameter, ProductParameter, OrderItem
+from .models import Store, Category, Product, PriceItem, Price, Parameter, ProductParameter, OrderItem, Order
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -108,14 +108,27 @@ class PriceSerializer(serializers.ModelSerializer):
         model = Price
         fields = ('store', 'date', 'price_items')
 
-    price_items = serializers.SerializerMethodField()
-
-    def get_price_items(self, obj):
-        serializer = PriceItemSerializer(obj.price_items.all(), many=True)
-        return serializer.data
+    price_items = PriceItemSerializer(many=True)
 
 
 class ImportOrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ('product', 'quantity', 'cost')
+
+
+class ExportOrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ('product', 'quantity', 'cost')
+
+    product = serializers.StringRelatedField()
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ('store', 'date', 'status', 'order_items')
+
+    store = serializers.StringRelatedField()
+    order_items = ExportOrderItemSerializer(many=True)
