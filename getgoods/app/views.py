@@ -143,7 +143,7 @@ class StorePriceView(APIView):
 
     def get(self, request):
         store = Store.objects.get(user=request.user)
-        price = Price.objects.filter(store=store).order_by('data').last()
+        price = Price.objects.filter(store=store).order_by('date').last()
         serializer = PriceSerializer(price)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

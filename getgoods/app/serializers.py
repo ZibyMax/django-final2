@@ -106,7 +106,7 @@ class StorePriceSerializer(serializers.ModelSerializer):
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
-        fields = ('store', 'data', 'price_items')
+        fields = ('store', 'date', 'price_items')
 
     price_items = serializers.SerializerMethodField()
 

@@ -5,6 +5,7 @@ ORDER_STATUS = (
     ('new', 'новый'),
     ('processing', 'обработка'),
     ('executed', 'выполнен'),
+    ('error', 'ошибка')
 )
 
 
