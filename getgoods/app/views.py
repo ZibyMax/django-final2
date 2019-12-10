@@ -199,13 +199,6 @@ class OrderView(APIView):
                 order.delete()
                 Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         order.save()
-        price = Price.objects.filter(store=store).order_by('date').last()
-        price_items = price.price_items.all()
-        for order_item in order.order_items.all():
-            print(f'{order_item.product}\n'
-                  f'{order_item.quantity}\n'
-                  f'{order_item.cost}\n\n')
-
         return Response(status=status.HTTP_200_OK)
 
 
