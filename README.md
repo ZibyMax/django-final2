@@ -86,3 +86,16 @@
 
 ### store-order/
 **get: Получение списка заказов своего магазина**
+
+##Инструкция по установке
+
+Установите зависимости: pip install -r requirements.txt
+Выполните миграции: manage.py migrate
+Загрузите тестовые данные в базу: manage.py loaddata db.json
+Запустите тестовый сервер manage.py runserver
+
+Данные тестовых пользователей (логин: пароль):
+store1@gg.com: store1
+store2@gg.com: store2
+store3@gg.com: store3
+juststore@gg.com: juststore
