@@ -171,7 +171,8 @@ class OrderView(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        queryset = Order.objects.filter(user=request.user).order_by('-date')
+        queryset = Order.objects.select_related('store').prefetch_related('order_items').\
+            filter(user=request.user).order_by('-date')
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
 

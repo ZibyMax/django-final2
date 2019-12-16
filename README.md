@@ -90,6 +90,7 @@
 ## Инструкция по установке
 
 - Установите зависимости: pip install -r requirements.txt
+- Формируем базу данных: manage.py makemigrations
 - Выполните миграции: manage.py migrate
 - Загрузите тестовые данные в базу: manage.py loaddata db.json
 - Запустите тестовый сервер manage.py runserver
