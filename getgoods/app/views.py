@@ -1,12 +1,24 @@
-from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
 from .serializers import *
 from .models import Category, Parameter, Product, ProductParameter, Store, Price, Order
+from django.conf import settings
+from getgoods.celery import app
+
+
+@app.task
+def send_mail_task(recipients, subject, context):
+    send_mail(
+        subject=subject,
+        message=context,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=recipients,
+        fail_silently=False
+)
 
 
 # Доступ только для пользователей зарегистрировавших магазин
@@ -75,13 +87,7 @@ class RecoverUserView(APIView):
         password = User.objects.make_random_password()
         user.set_password(password)
         user.save()
-
-        # ПРОБЛЕМКА)))
-        # user.email_user(
-        #     'Password recovery',
-        #     f'New password: {new_password}',
-        # )
-
+        send_mail_task.delay((user.email,), 'Password recovery', f'New password: {password}')
         return Response({'password': password}, status=status.HTTP_200_OK)
 
 
@@ -212,3 +218,4 @@ class StoreOrderView(APIView):
         queryset = Order.objects.filter(store=store).order_by('date')
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
+
