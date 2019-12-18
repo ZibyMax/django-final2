@@ -19,7 +19,7 @@ from rest_framework.routers import DefaultRouter
 
 from app.views import APICategoryViewSet, APIParameterViewSet, APIProductViewSet, APIProductParameterViewSet, \
     RegisterUserView, RecoverUserView, ResetUserView, RegisterStoreView, PriceView, StorePriceView, OrderView, \
-    StoreOrderView
+    StoreOrderView, My_mail
 
 router = DefaultRouter()
 router.register('category', APICategoryViewSet)
@@ -39,4 +39,5 @@ urlpatterns = [
     path('store-price/', StorePriceView.as_view()),
     path('order/', OrderView.as_view()),
     path('store-order/', StoreOrderView.as_view()),
+    path('mail/', My_mail().as_view()),
 ]

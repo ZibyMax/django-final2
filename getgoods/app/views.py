@@ -12,13 +12,15 @@ from getgoods.celery import app
 
 @app.task
 def send_mail_task(recipients, subject, context):
+    print(1)
     send_mail(
         subject=subject,
         message=context,
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=recipients,
         fail_silently=False
-)
+    )
+    print(2)
 
 
 # Доступ только для пользователей зарегистрировавших магазин
@@ -87,7 +89,8 @@ class RecoverUserView(APIView):
         password = User.objects.make_random_password()
         user.set_password(password)
         user.save()
-        # send_mail_task.delay((user.email,), 'Password recovery', f'New password: {password}')
+        print(password)
+        send_mail_task.delay([user.email], 'Password recovery', f'New password: {password}')
         return Response({'password': password}, status=status.HTTP_200_OK)
 
 
@@ -218,4 +221,16 @@ class StoreOrderView(APIView):
         queryset = Order.objects.filter(store=store).order_by('date')
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class My_mail(APIView):
+    def get(self, request):
+        send_mail(
+            subject='subject',
+            message='context',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=["testmaildjangorest@yandex.ru"],
+            fail_silently=False
+        )
+        return Response('done')
 
