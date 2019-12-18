@@ -87,7 +87,7 @@ class RecoverUserView(APIView):
         password = User.objects.make_random_password()
         user.set_password(password)
         user.save()
-        send_mail_task.delay((user.email,), 'Password recovery', f'New password: {password}')
+        # send_mail_task.delay((user.email,), 'Password recovery', f'New password: {password}')
         return Response({'password': password}, status=status.HTTP_200_OK)
 
 
