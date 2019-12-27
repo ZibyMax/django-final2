@@ -56,6 +56,9 @@ class PriceItem(models.Model):
         verbose_name = 'Позиция прайс-листа'
         verbose_name_plural = "Список позиций прайс-листов"
 
+    def __str__(self):
+        return f'{self.product} ({self.quantity} x {self.cost})'
+
 
 class Price(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)

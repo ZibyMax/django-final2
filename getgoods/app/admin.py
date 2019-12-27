@@ -3,48 +3,47 @@ from django.contrib import admin
 from .models import Category, Product, PriceItem, Store, Parameter, ProductParameter, Price, Order, OrderItem
 
 
+@admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(PriceItem)
 class PriceItemAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('product', 'quantity', 'cost',)
 
 
+@admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('store', 'date',)
 
 
+@admin.register(Parameter)
 class ParameterAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(ProductParameter)
 class ProductParameterAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'store', 'date',)
 
 
+@admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('product', 'quantity', 'cost',)
 
-
-admin.site.register(Store, StoreAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Product, ProductAdmin)
-admin.site.register(PriceItem, PriceItemAdmin)
-admin.site.register(Price, PriceAdmin)
-admin.site.register(Parameter, ParameterAdmin)
-admin.site.register(ProductParameter, ProductParameterAdmin)
-admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderItem, OrderItemAdmin)
