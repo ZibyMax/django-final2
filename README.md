@@ -101,3 +101,6 @@
 - store2@gg.com: store2
 - store3@gg.com: store3
 - juststore@gg.com: juststore
+
+Схема Open API
+https://documenter.getpostman.com/view/9210267/SWLbAVYL
