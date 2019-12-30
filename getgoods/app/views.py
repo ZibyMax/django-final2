@@ -2,6 +2,7 @@ from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from rest_framework.response import Response
+# from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from .serializers import *
@@ -201,6 +202,7 @@ class OrderView(APIView):
 # Получение магазином списка своих заказов
 class StoreOrderView(APIView):
     permission_classes = (IsShopOwner, )
+    # throttle_classes = [UserRateThrottle]
 
     def get(self, request):
         store = Store.objects.filter(user=request.user).first()
