@@ -25,7 +25,7 @@ class PriceItemAdmin(admin.ModelAdmin):
 
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
-    list_display = ('store', 'date',)
+    list_display = ('store', 'date')
 
 
 @admin.register(Parameter)

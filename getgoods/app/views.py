@@ -7,20 +7,21 @@ from rest_framework.viewsets import ModelViewSet
 from .serializers import *
 from .models import Category, Parameter, Product, ProductParameter, Store, Price, Order
 from django.conf import settings
-from getgoods.celery import app
+from .tasks import send_mail_task
 
 
-@app.task
-def send_mail_task(recipients, subject, context):
-    print(1)
-    send_mail(
-        subject=subject,
-        message=context,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=recipients,
-        fail_silently=False
-    )
-    print(2)
+
+# @app.task
+# def send_mail_task(recipients, subject, context):
+#     print(1)
+#     send_mail(
+#         subject=subject,
+#         message=context,
+#         from_email=settings.EMAIL_HOST_USER,
+#         recipient_list=recipients,
+#         fail_silently=False
+#     )
+#     print(2)
 
 
 # Доступ только для пользователей зарегистрировавших магазин
@@ -222,15 +223,4 @@ class StoreOrderView(APIView):
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
-class My_mail(APIView):
-    def get(self, request):
-        send_mail(
-            subject='subject',
-            message='context',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=["testmaildjangorest@yandex.ru"],
-            fail_silently=False
-        )
-        return Response('done')
 
