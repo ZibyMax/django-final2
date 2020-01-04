@@ -126,3 +126,14 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = "testmaildjangorest@yandex.ru"
 EMAIL_HOST_PASSWORD = "9RW-ePa-SuC-QW6"
 EMAIL_USE_SSL = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/min',
+        'user': '10/sec'
+    }
+}
