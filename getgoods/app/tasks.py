@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
-from getgoods.celery import celery_app
 from django.conf import settings
+from getgoods.celery import celery_app
 
 
 @celery_app.task
