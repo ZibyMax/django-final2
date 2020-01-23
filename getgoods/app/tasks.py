@@ -5,12 +5,12 @@ from getgoods.celery import celery_app
 
 @celery_app.task
 def send_mail_task(recipients, subject, context):
-    print(1)
-    send_mail(
-        subject=subject,
-        message=context,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=recipients,
-        fail_silently=False
-    )
-    print(2)
+    # send_mail(
+    #     subject=subject,
+    #     message=context,
+    #     from_email=settings.EMAIL_HOST_USER,
+    #     recipient_list=recipients,
+    #     fail_silently=False
+    # )
+    with open('mail_was_sent.txt', 'w', encoding='utf-8') as f:
+        pass
