@@ -5,3 +5,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'getgoods.settings')
 celery_app = Celery('getgoods')
 celery_app.config_from_object('django.conf:settings')
 celery_app.autodiscover_tasks()
+celery_app.task_always_eager = True
+
